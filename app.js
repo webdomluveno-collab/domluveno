@@ -205,6 +205,7 @@ function shareView(ev){
  <h1 class="h-display text-[32px] sm:text-[42px] mt-5">Hotovo. Teď už jen<br/>sežeň partu.</h1>
  <p class="text-ink/60 font-semibold mt-2">Pošli jeden odkaz do skupiny. Kamarádi nepotřebují účet.</p>
  <div class="card p-5 mt-6 text-left"><div class="text-[12px] font-extrabold text-ink/50 tracking-wide">TVŮJ ODKAZ · <span style="font-weight:700">${remote}</span></div>
+ <div class="text-[11px] font-bold text-ink/40 mt-1">verze v3 · backend ${backendOn ? "ON" : "OFF"} · event ${onServer ? "server" : "lokální"}</div>
  <div class="share-link mt-2">${link}</div>
  <div class="grid grid-cols-2 gap-2 mt-3"><button class="btn-primary justify-center" id="copy"><i data-lucide="copy" class="w-4 h-4"></i> Kopírovat odkaz</button>
  <a class="btn-ghost justify-center" href="#/p/${ev.id}">Otevřít náhled</a></div>
