@@ -197,7 +197,9 @@ function createView(){
 
 function shareView(ev){
  const link=(window.Backend?Backend.shareUrl(ev.id):"domluveno.online/#/p/"+ev.id);
- const remote=window.Backend&&Backend.enabled()?"Sdílený odkaz funguje na všech zařízeních ✓":"Demo režim — po napojení Supabase poběží odkazy všude";
+ const backendOn=window.Backend&&Backend.enabled();
+ const onServer=!!ev._remote;
+ const remote=backendOn?(onServer?"Sdílený odkaz funguje na všech zařízeních ✓":"POZOR: jen v tomto zařízení — na server se neuložilo"):"Demo režim — po napojení Supabase poběží odkazy všude";
  return `<section class="max-w-xl mx-auto px-4 pt-[110px] text-center">
  <div class="anim-in mx-auto w-[86px] h-[86px] rounded-full grid place-items-center text-white text-[38px] font-black" style="background:linear-gradient(135deg,#2FD6A3,#0EA5E9);box-shadow:0 20px 44px -12px rgba(47,214,163,.6)">✓</div>
  <h1 class="h-display text-[32px] sm:text-[42px] mt-5">Hotovo. Teď už jen<br/>sežeň partu.</h1>
@@ -372,8 +374,8 @@ function bind(h){
   // Když je napojený Supabase, vytvoř event i na serveru a přesměruj na serverové ID
   if(window.Backend&&Backend.enabled()){
    toast("Ukládám na server…");
-   try{const fresh=await Backend.createEventRemote(draft);store.events[fresh.id]=fresh;save();toast("Hotovo. Teď už jen sežeň partu.");location.hash="#/s/"+fresh.id;return}
-   catch(e){toast("Server nedostupný — ukládám lokálně")}
+   try{const fresh=await Backend.createEventRemote(draft);store.events[fresh.id]=fresh;save();toast("Na serveru ✓ Teď už jen sežeň partu.");location.hash="#/s/"+fresh.id;return}
+   catch(e){console.error("[domluveno] create remote selhalo:",e);toast("Server chyba ("+((e&&e.message)||"neznámá")+") — ukládám jen lokálně")}
   }
   toast("Hotovo. Teď už jen sežeň partu.");location.hash="#/s/"+id;
  });
