@@ -118,7 +118,7 @@ return `
 <div class="card card-hover p-6"><div class="font-display font-extrabold text-violet-300 text-[40px]">01</div><div class="font-extrabold text-[19px]">Vytvoř plán</div><p class="text-[14px] text-ink/60 font-semibold">Vyber, co plánuješ, a přidej možné termíny. Zabere to dvě minuty.</p>
 <div class="mt-4 rounded-2xl bg-lav border border-ink/10 p-3.5"><div class="font-extrabold text-[14px]">🍻 Páteční pivo</div><div class="flex gap-1.5 mt-2"><span class="chip bg-ink text-white">Pá 19:00</span><span class="chip bg-ink text-white">So 19:00</span><span class="chip bg-white border border-ink/10">+ přidat</span></div></div></div>
 <div class="card card-hover p-6"><div class="font-display font-extrabold text-violet-300 text-[40px]">02</div><div class="font-extrabold text-[19px]">Pošli jeden odkaz</div><p class="text-[14px] text-ink/60 font-semibold">Otevřou ho z WhatsAppu, Messengeru i IG. Žádný účet nepotřebují.</p>
-<div class="mt-4 rounded-2xl bg-white border border-ink/10 p-3.5"><div class="share-link !text-[12px]">domluveno.online/#/p/patecni-pivo-x7k2</div><div class="flex gap-1.5 mt-2.5"><span class="chip bg-[#25D366] text-white">WhatsApp</span><span class="chip bg-[#0084FF] text-white">Messenger</span><span class="chip bg-ink text-white">Kopírovat</span></div></div></div>
+<div class="mt-4 rounded-2xl bg-white border border-ink/10 p-3.5"><div class="share-link !text-[12px]">www.domluveno.online/?p=patecni-pivo-x7k2</div><div class="flex gap-1.5 mt-2.5"><span class="chip bg-[#25D366] text-white">WhatsApp</span><span class="chip bg-[#0084FF] text-white">Messenger</span><span class="chip bg-ink text-white">Kopírovat</span></div></div></div>
 <div class="card card-hover p-6"><div class="font-display font-extrabold text-violet-300 text-[40px]">03</div><div class="font-extrabold text-[19px]">Najdeme nejlepší shodu</div><p class="text-[14px] text-ink/60 font-semibold">Domluveno spočítá vítěze a jasně ho ukáže. Žádné luštění tabulky.</p>
 <div class="mt-4 rounded-2xl p-3.5 text-white" style="background:linear-gradient(135deg,#1B1533,#6C2BEE)"><div class="font-extrabold">🏆 Sobota 19:00</div><div class="text-[13px] font-bold opacity-80">8/9 lidí · potvrdit jedním klikem</div></div></div>
 </div>
@@ -196,7 +196,7 @@ function createView(){
 }
 
 function shareView(ev){
- const link=(window.Backend?Backend.shareUrl(ev.id):"domluveno.online/#/p/"+ev.id);
+ const link=(window.Backend?Backend.shareUrl(ev.id):"https://www.domluveno.online/?p="+ev.id);
  const backendOn=window.Backend&&Backend.enabled();
  const onServer=!!ev._remote;
  const remote=backendOn?(onServer?"Sdílený odkaz funguje na všech zařízeních ✓":"POZOR: jen v tomto zařízení — na server se neuložilo"):"Demo režim — po napojení Supabase poběží odkazy všude";
@@ -314,7 +314,12 @@ function dashView(){
 
 /* ---------- router ---------- */
 function render(){
- const h=location.hash||"#/";
+ let h=location.hash||"#/";
+ // Sdílecí odkazy ve tvaru /?p=ID (přežijí přesměrování i náhledy v chatovacích appkách)
+ try{
+  const qp=new URLSearchParams(location.search).get("p");
+  if(qp&&(h==="#/"||h==="#"||h===""))h="#/p/"+qp;
+ }catch(e){}
  const app=$("#app");
  document.querySelectorAll("#tabbar a").forEach(a=>a.classList.remove("on"));
  window.scrollTo({top:0});
@@ -354,7 +359,7 @@ function fillLanding(){
 }
 
 function bind(h){
- $("#copy")&&( $("#copy").onclick=async()=>{const id=h.split("/")[2]||"demo";const url=window.Backend?Backend.fullShare(id):"https://domluveno.online/#/p/"+id;try{await navigator.clipboard.writeText(url);toast("Odkaz zkopírován ✓")}catch(e){toast("Odkaz zkopírován ✓")}} );
+ $("#copy")&&( $("#copy").onclick=async()=>{const id=h.split("/")[2]||"demo";const url=window.Backend?Backend.fullShare(id):"https://www.domluveno.online/?p="+id;try{await navigator.clipboard.writeText(url);toast("Odkaz zkopírován ✓")}catch(e){toast("Odkaz zkopírován ✓")}} );
  $("#copy2")&&($("#copy2").onclick=async()=>{try{await navigator.clipboard.writeText(location.href);toast("Finální plán zkopírován ✓")}catch(e){toast("Finální plán zkopírován ✓")}});
  // create bindings
  document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{draft.type=+b.dataset.t;render()});

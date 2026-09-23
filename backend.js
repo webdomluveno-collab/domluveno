@@ -11,7 +11,7 @@ window.Backend = (() => {
     const p = location.pathname.replace(/index\.html?$/, "").replace(/\/$/, "");
     return location.origin + (p || "");
   }
-  const shareUrl = (id) => base() + "/#/p/" + id;
+  const shareUrl = (id) => base() + "/?p=" + id;
   const fullShare = shareUrl;
 
   async function rpc(fn, body) {
