@@ -4,6 +4,6 @@
 window.DOMLUVENO_CONFIG = {
   SUPABASE_URL: "https://zcjucalejuuxgugwzcuw.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_1Xptm55-6paZ2PJ_Zf4QhA_WeJKCDbt",
-  /* Ostrá adresa: https://domluveno.online. Prázdné = aktuální origin. */
-  APP_URL: "https://domluveno.online"
+  /* Ostrá adresa (kanonická s www, bez přesměrování). */
+  APP_URL: "https://www.domluveno.online"
 };
