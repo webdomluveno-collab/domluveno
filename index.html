@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Domluveno — Dohodněte se bez dohadování</title>
+<meta name="description" content="Termín, místo i plán. Pošli jeden odkaz a nechte skupinu rozhodnout."/>
+<meta name="theme-color" content="#FAF5EC"/>
+<!-- Ostrá adresa -->
+<link rel="canonical" href="https://domluveno.online/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Domluveno"/>
+<meta property="og:title" content="Domluveno — Dohodněte se bez dohadování"/>
+<meta property="og:description" content="Vytvoř plán, pošli jeden odkaz a nechte skupinu rozhodnout. Bez registrace pro účastníky."/>
+<meta property="og:url" content="https://domluveno.online/"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,700;1,9..144,900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Manrope','system-ui','sans-serif'],display:['Fraunces','Georgia','serif'],hand:['Caveat','cursive']},colors:{ink:'#221B12',inksoft:'#4A4238',violet2:'#5E22E8',violetdeep:'#3B139E',cream:'#FAF5EC',paper:'#FFFDF8',coral:'#FF6B5E',mint:'#2FD6A3',sun:'#FFC531',pinkx:'#FF8FAB'},boxShadow:{sticker:'3px 3px 0 #221B12',card:'0 10px 30px -14px rgba(34,27,18,.25)',pop:'5px 5px 0 #221B12'},borderRadius:{xl2:'20px'}}}}</script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="./styles.css"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='26' fill='%236C2BEE'/><path d='M30 53l14 14 26-30' stroke='white' stroke-width='11' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>"/>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div id="grain" aria-hidden="true"></div>
+<div id="bg-blobs" aria-hidden="true"><span class="b1"></span><span class="b2"></span><i class="dots"></i></div>
+
+<header id="nav" class="fixed top-0 left-0 right-0 z-50">
+<div class="max-w-6xl mx-auto px-4">
+<div class="navpill mt-3 flex items-center justify-between gap-3 px-4 sm:px-5 py-3">
+<a href="#/" class="flex items-center gap-2.5 font-display font-black text-[20px] tracking-tight">
+<span class="logo-badge"><svg viewBox="0 0 100 100" width="20" height="20"><path d="M28 54l15 15 29-34" stroke="#FFFDF8" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="74" cy="26" r="9" fill="#FFC531"/></svg></span>
+Domluveno<span class="hand text-[15px] text-ink/60 font-semibold -ml-1 mt-1 -rotate-3">ahoj!</span>
+</a>
+<nav class="hidden md:flex items-center gap-7 text-[14.5px] font-semibold text-ink/70">
+<a href="#jak-to-funguje" data-scroll class="hover:text-ink">Jak to funguje</a>
+<a href="#priklady" data-scroll class="hover:text-ink">Příklady</a>
+<a href="#parta" data-scroll class="hover:text-ink">Pro skupiny</a>
+</nav>
+<div class="flex items-center gap-2">
+<a href="#/dashboard" class="hidden sm:inline-flex text-[14px] font-bold text-ink/70 hover:text-ink px-3 py-2">Přihlásit se</a>
+<a href="#/create" class="btn-primary !py-2.5 !px-4 text-[14px]">Vytvořit plán <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+</div>
+</div>
+</div>
+</header>
+
+<main id="app" class="relative z-10"></main>
+
+<footer class="relative z-10 max-w-6xl mx-auto px-4 pb-16 pt-6">
+<div class="foot-card">
+<div class="flex flex-col md:flex-row md:items-center gap-6 justify-between">
+<div><div class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight">Dohodněte se bez dohadování.</div>
+<p class="text-ink/60 font-medium mt-1">Termín, místo i plán. Pošli jeden odkaz a nechte skupinu rozhodnout.</p></div>
+<div class="flex gap-2.5 flex-wrap"><a href="#/create" class="btn-primary">Vytvořit plán zdarma</a><a href="#/p/demo" class="btn-ghost">Vyzkoušet hlasování</a></div>
+</div>
+<div class="mt-6 pt-5 border-t border-ink/10 flex flex-col sm:flex-row gap-2 justify-between text-[13px] text-ink/50 font-semibold"><span>© 2026 Domluveno · Vidíme se tam 👋</span><span>Bez registrace pro účastníky · Hotovo za pár minut</span></div>
+</div>
+</footer>
+
+<nav id="tabbar" class="md:hidden">
+<a href="#/" data-tab="home"><i data-lucide="sparkles"></i><span>Objevit</span></a>
+<a href="#/create" data-tab="create"><span class="plus">+</span><span>Vytvořit</span></a>
+<a href="#/dashboard" data-tab="dash"><i data-lucide="calendar-heart"></i><span>Moje plány</span></a>
+<a href="#/groups" data-tab="groups"><i data-lucide="users"></i><span>Parta</span></a>
+</nav>
+
+<div id="toast"></div>
+<script src="./config.js"></script>
+<script src="./backend.js"></script>
+<script src="./app.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
