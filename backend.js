@@ -153,5 +153,5 @@ window.Backend = (() => {
     });
   }
 
-  return { enabled, shareUrl, fullShare, pullEvent, createEventRemote, castVoteRemote, voterToken };
+  return { enabled, rpc, shareUrl, fullShare, pullEvent, createEventRemote, castVoteRemote, voterToken };
 })();

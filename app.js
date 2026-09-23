@@ -62,6 +62,7 @@ return `
 </div>
 <div class="text-[13px] font-bold text-ink/50 mt-4 flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i> Bez registrace pro účastníky • Hotovo za pár minut</div>
 <div class="flex items-center gap-3 mt-6">${AVGROUP(["Martin","Eva","Tomáš","Honza","David","+4"])}<span class="text-[13px] font-bold text-ink/55">12 400+ part už se domluvilo</span></div>
+<div class="text-[11px] font-bold text-ink/35 mt-2">verze v7 · p=<span id="dbg-p">?</span> · backend <span id="dbg-b">?</span></div>
 </div>
 
 <div class="relative anim-in" style="animation-delay:.1s">
@@ -242,6 +243,7 @@ function voteView(ev,thanks){
 
 function resultsView(ev){
  const r=score(ev);const w=r[0],s=r[1];const bp=bestPlace(ev);
+ if(!w)return `<section class="max-w-2xl mx-auto px-4 pt-[100px] text-center"><div class="font-display font-black text-[28px]">Zatím tu není co vyhodnotit 👀</div><p class="text-ink/60 font-semibold mt-2">Přidej aspoň jeden termín a pošli odkaz do skupiny.</p><a href="#/p/${ev.id}" class="btn-primary mt-5">Zpět na hlasování</a></section>`;
  const cant=w.total-w.yes-w.maybe;const onlyOut=cant===1?ev.votes.find(v=>!v.yes.includes(w.k)&&!v.maybe.includes(w.k))?.name:null;
  return `<section class="max-w-2xl mx-auto px-4 pt-[100px]">
  <div class="text-center"><span class="eyebrow">🏁 Už se to rýsuje</span>
@@ -254,7 +256,7 @@ function resultsView(ev){
  <div class="flex items-center gap-3 mt-4">${AVGROUP(w.whoY.slice(0,6))}<span class="text-[13px] font-bold opacity-80">${onlyOut?`Pouze ${onlyOut} nemůže.`:`${w.whoY.slice(0,4).join(", ")} a další můžou.`}</span></div>
  <div class="prog mt-5 !bg-white/20"><i style="width:${Math.round(w.yes/w.total*100)}%;background:linear-gradient(90deg,#FFC531,#FF8FAB)"></i></div>
  </div>
- <div class="card p-5 mt-4 flex items-center gap-4"><div class="text-[30px]">🥈</div><div class="flex-1"><div class="text-[12px] font-extrabold text-ink/50">DALŠÍ NEJLEPŠÍ MOŽNOST</div><div class="font-extrabold text-[17px]">${s.date.label} · ${s.time}</div><div class="text-[13px] font-bold text-ink/55">${s.yes} z ${s.total} lidí</div></div><div class="prog !w-24"><i style="width:${Math.round(s.yes/s.total*100)}%"></i></div></div>
+ ${r[1]?`<div class="card p-5 mt-4 flex items-center gap-4"><div class="text-[30px]">🥈</div><div class="flex-1"><div class="text-[12px] font-extrabold text-ink/50">DALŠÍ NEJLEPŠÍ MOŽNOST</div><div class="font-extrabold text-[17px]">${s.date.label} · ${s.time}</div><div class="text-[13px] font-bold text-ink/55">${s.yes} z ${s.total} lidí</div></div><div class="prog !w-24"><i style="width:${Math.round(s.yes/s.total*100)}%"></i></div></div>`:""}
  ${ev.votes.length===0?`<div class="card p-8 mt-4 text-center"><div class="text-[34px]">👀</div><div class="font-extrabold text-[18px] mt-2">Zatím tu nikdo nehlasoval.</div><p class="text-ink/55 font-semibold text-[14px]">Pošli odkaz do skupiny a sleduj, jak se plán skládá.</p><button class="btn-primary mt-3" onclick="location.hash='#/s/${ev.id}'">Sdílet plán</button></div>`:""}
  <div class="flex gap-2 mt-4 flex-wrap"><button id="matrixbtn" class="btn-ghost !py-3 text-[14px]">Zobrazit všechny odpovědi <i data-lucide="chevron-down" class="w-4 h-4"></i></button>
  <a href="#/p/${ev.id}" class="btn-ghost !py-3 text-[14px]">Přidat hlas</a></div>
@@ -337,13 +339,18 @@ function render(){
  if(window.lucide)lucide.createIcons();
  bind(h);
  if(h==="#/"||!h){fillLanding()}
+ try{
+  const dp=$("#dbg-p"),db=$("#dbg-b");
+  if(dp)dp.textContent=new URLSearchParams(location.search).get("p")||"žádné";
+  if(db)db.textContent=(window.Backend&&Backend.enabled())?"ON":"OFF";
+ }catch(e){}
  // Serverová synchronizace: neznámé / vzdálené eventy dotáhni ze Supabase (když je nakonfigurován)
  const m=h.match(/^#\/(s|p)\/([^\/]+)/);
  if(m&&window.Backend&&Backend.enabled()){
   const sid=m[2];
   if(sid&&sid!=="demo"&&!window["_pulled_"+sid]){
    window["_pulled_"+sid]=true;
-   Backend.pullEvent(sid).then(fresh=>{store.events[sid]=fresh;save();render()}).catch(()=>{});
+   Backend.pullEvent(sid).then(fresh=>{store.events[sid]=fresh;save();render()}).catch(()=>{delete window["_pulled_"+sid]});
   }
  }
 }
@@ -413,7 +420,20 @@ function bind(h){
   window._thanks=true;window._sel={};toast("Díky, počítáme s tebou 👋");render();
  });
  $("#matrixbtn")&&($("#matrixbtn").onclick=()=>{const m=$("#matrix");m.classList.toggle("hidden");$("#matrixbtn").innerHTML=m.classList.contains("hidden")?"Zobrazit všechny odpovědi <i data-lucide='chevron-down' class='w-4 h-4'></i>":"Skrýt odpovědi <i data-lucide='chevron-up' class='w-4 h-4'></i>";lucide.createIcons()});
- $("#confirm")&&($("#confirm").onclick=()=>{const id=h.split("/")[2];store.events[id].confirmed=true;save();location.hash="#/p/"+id+"/confirmed"});
+ $("#confirm")&&($("#confirm").onclick=async()=>{
+  const id=h.split("/")[2];const ev=store.events[id]||store.events.demo;
+  ev.confirmed=true;save();
+  // Potvrzení i na server (jen organizátor s admin tokenem)
+  try{
+   const adm=localStorage.getItem("domluveno-admin-"+id);
+   if(adm&&ev._remote&&window.Backend&&Backend.enabled()){
+    const w=score(ev)[0];
+    const optUuid=w&&ev._keyByTime?w._keyByTime[w.k]||null:null;
+    await Backend.rpc("confirm_event",{p_event:id,p_admin_token:adm,p_option_id:optUuid,p_place_id:null});
+   }
+  }catch(e){console.error("[domluveno] confirm remote selhalo:",e)}
+  location.hash="#/p/"+id+"/confirmed";
+ });
 }
 window.addEventListener("hashchange",()=>{window._thanks=false;if(!location.hash.includes("/p/"))window._sel={};render()});
 render();
